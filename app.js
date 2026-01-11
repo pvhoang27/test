@@ -14,6 +14,9 @@ class StepCounter {
         this.stepDetected = false;
         this.cooldown = false;
         
+        // Bind motion handler once
+        this.boundHandleMotion = this.handleMotion.bind(this);
+        
         // DOM elements
         this.stepCountElement = document.getElementById('stepCount');
         this.distanceElement = document.getElementById('distance');
@@ -112,7 +115,7 @@ class StepCounter {
     
     startMotionDetection() {
         // Add event listener for device motion
-        window.addEventListener('devicemotion', this.handleMotion.bind(this));
+        window.addEventListener('devicemotion', this.boundHandleMotion);
         
         // Fallback: simulate steps with space bar for testing on desktop
         this.keyHandler = (e) => {
@@ -125,7 +128,7 @@ class StepCounter {
     }
     
     stopMotionDetection() {
-        window.removeEventListener('devicemotion', this.handleMotion.bind(this));
+        window.removeEventListener('devicemotion', this.boundHandleMotion);
         if (this.keyHandler) {
             window.removeEventListener('keydown', this.keyHandler);
         }
@@ -168,18 +171,24 @@ class StepCounter {
     }
     
     updateDisplay() {
+        // Constants for calculations
+        const CM_TO_KM_DIVISOR = 100000; // Convert cm to km (steps * cm / 100000)
+        const CALORIES_PER_STEP = 0.04; // Average calories burned per step (based on 70kg person)
+        const BASE_WEIGHT = 70; // Reference weight for calorie calculation
+        
         // Update step count
         this.stepCountElement.textContent = this.steps;
         
         // Calculate and update distance (km)
         const stepLength = parseFloat(this.stepLengthInput.value) || 75;
-        const distance = (this.steps * stepLength) / 100000; // Convert to km
+        const distance = (this.steps * stepLength) / CM_TO_KM_DIVISOR;
         this.distanceElement.textContent = distance.toFixed(2);
         
         // Calculate and update calories
-        // Formula: calories = steps * 0.04 (rough estimate)
+        // Formula: calories = steps * calories_per_step * (user_weight / base_weight)
+        // This adjusts the calorie burn based on user's weight relative to a 70kg baseline
         const weight = parseFloat(this.weightInput.value) || 70;
-        const calories = Math.round(this.steps * 0.04 * (weight / 70));
+        const calories = Math.round(this.steps * CALORIES_PER_STEP * (weight / BASE_WEIGHT));
         this.caloriesElement.textContent = calories;
     }
     
