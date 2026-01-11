@@ -17,6 +17,9 @@ class StepCounter {
         // Bind motion handler once
         this.boundHandleMotion = this.handleMotion.bind(this);
         
+        // Bind keyboard handler once for testing
+        this.boundKeyHandler = this.handleKeyPress.bind(this);
+        
         // DOM elements
         this.stepCountElement = document.getElementById('stepCount');
         this.distanceElement = document.getElementById('distance');
@@ -118,19 +121,18 @@ class StepCounter {
         window.addEventListener('devicemotion', this.boundHandleMotion);
         
         // Fallback: simulate steps with space bar for testing on desktop
-        this.keyHandler = (e) => {
-            if (e.code === 'Space' && this.isRunning) {
-                e.preventDefault();
-                this.addStep();
-            }
-        };
-        window.addEventListener('keydown', this.keyHandler);
+        window.addEventListener('keydown', this.boundKeyHandler);
     }
     
     stopMotionDetection() {
         window.removeEventListener('devicemotion', this.boundHandleMotion);
-        if (this.keyHandler) {
-            window.removeEventListener('keydown', this.keyHandler);
+        window.removeEventListener('keydown', this.boundKeyHandler);
+    }
+    
+    handleKeyPress(e) {
+        if (e.code === 'Space' && this.isRunning) {
+            e.preventDefault();
+            this.addStep();
         }
     }
     
