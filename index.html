@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng dụng Đếm Bước Chân</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚶 Đếm Bước Chân</h1>
+            <p class="subtitle">Ứng dụng theo dõi đi bộ</p>
+        </header>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">👟</div>
+                <div class="stat-value" id="stepCount">0</div>
+                <div class="stat-label">Bước chân</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📏</div>
+                <div class="stat-value" id="distance">0.00</div>
+                <div class="stat-label">Km</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-value" id="calories">0</div>
+                <div class="stat-label">Calo</div>
+            </div>
+        </div>
+
+        <div class="time-container">
+            <div class="stat-icon">⏱️</div>
+            <div class="time-value" id="time">00:00:00</div>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn" class="btn btn-start">Bắt đầu</button>
+            <button id="pauseBtn" class="btn btn-pause" disabled>Tạm dừng</button>
+            <button id="resetBtn" class="btn btn-reset">Đặt lại</button>
+        </div>
+
+        <div class="settings">
+            <h3>Cài đặt</h3>
+            <div class="setting-item">
+                <label for="stepLength">Chiều dài bước (cm):</label>
+                <input type="number" id="stepLength" value="75" min="50" max="100">
+            </div>
+            <div class="setting-item">
+                <label for="weight">Cân nặng (kg):</label>
+                <input type="number" id="weight" value="70" min="30" max="200">
+            </div>
+        </div>
+
+        <div class="info">
+            <p>💡 <strong>Hướng dẫn:</strong> Nhấn "Bắt đầu" để theo dõi số bước chân của bạn. Ứng dụng sử dụng cảm biến chuyển động của thiết bị để phát hiện bước đi.</p>
+            <p class="sensor-status" id="sensorStatus">⏳ Đang kiểm tra cảm biến...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
