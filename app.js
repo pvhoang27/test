@@ -9,6 +9,9 @@ class StepCounter {
         this.stepDelay = 300; // Minimum time between steps (ms)
         this.history = [];
         
+        // Bind the motion handler once and store the reference
+        this.boundHandleMotion = this.handleMotion.bind(this);
+        
         // Load saved data
         this.loadData();
         
@@ -78,7 +81,7 @@ class StepCounter {
         this.statusElement.textContent = '✓ Đang đếm bước - Hãy di chuyển!';
         
         // Start listening to device motion
-        window.addEventListener('devicemotion', this.handleMotion.bind(this));
+        window.addEventListener('devicemotion', this.boundHandleMotion);
     }
     
     pause() {
@@ -91,7 +94,7 @@ class StepCounter {
         this.statusElement.textContent = 'Đã tạm dừng - Nhấn "Bắt đầu" để tiếp tục';
         
         // Stop listening to device motion
-        window.removeEventListener('devicemotion', this.handleMotion.bind(this));
+        window.removeEventListener('devicemotion', this.boundHandleMotion);
         
         // Save data
         this.saveData();
@@ -100,6 +103,11 @@ class StepCounter {
     reset() {
         const confirmed = confirm('Bạn có chắc muốn đặt lại bộ đếm bước?');
         if (!confirmed) return;
+        
+        // Stop tracking if currently running
+        if (this.isRunning) {
+            this.pause();
+        }
         
         this.steps = 0;
         this.history = [];
@@ -176,19 +184,30 @@ class StepCounter {
             return;
         }
         
-        let historyHTML = '';
+        // Clear previous content
+        historyDiv.innerHTML = '';
+        
         // Show in reverse order (newest first)
         for (let i = this.history.length - 1; i >= 0; i--) {
             const entry = this.history[i];
-            historyHTML += `
-                <div class="history-item">
-                    <span>${entry.time}</span>
-                    <span><strong>${entry.steps}</strong> bước</span>
-                </div>
-            `;
+            
+            // Create elements safely
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'history-item';
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.textContent = entry.time;
+            
+            const stepsSpan = document.createElement('span');
+            const strongElement = document.createElement('strong');
+            strongElement.textContent = entry.steps;
+            stepsSpan.appendChild(strongElement);
+            stepsSpan.appendChild(document.createTextNode(' bước'));
+            
+            itemDiv.appendChild(timeSpan);
+            itemDiv.appendChild(stepsSpan);
+            historyDiv.appendChild(itemDiv);
         }
-        
-        historyDiv.innerHTML = historyHTML;
     }
     
     saveData() {
